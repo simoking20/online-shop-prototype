@@ -1,0 +1,170 @@
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block title %}Dashboard - {{ block.super }}{% endblock title %}
+
+{% block content %}
+<div class="dashboard-container">
+    {% if current_user.is_authenticated %}
+    <h1>Welcome, {{ current_user.first_name|default:current_user.username }}!</h1>
+    {% endif %}
+    <p class="lead">Quickly navigate to different parts of the store. Here's a quick summary for you:</p>
+
+    {# User Specific Summary Section #}
+    <div class="user-summary-section">
+        {% if last_order %}
+            <div class="summary-card">
+                <h3>Your Last Order</h3>
+                <p><strong>Order ID:</strong> #{{ last_order.id }}</p>
+                <p><strong>Date:</strong> {{ last_order.date_ordered|date:"F d, Y" }}</p>
+                <p><strong>Total:</strong> ${{ last_order.get_cart_total|floatformat:2 }}</p>
+                <a href="{% url 'shop:order_confirmation' last_order.id %}" class="button button-small">View Order</a>
+            </div>
+        {% else %}
+            <div class="summary-card">
+                <h3>No Recent Orders</h3>
+                <p>You haven't placed any orders yet. Start shopping!</p>
+            </div>
+        {% endif %}
+
+        <div class="summary-card">
+            <h3>Total Completed Orders</h3>
+            <p class="order-count">{{ total_completed_orders }}</p>
+            <a href="{% url 'shop:order_history' %}" class="button button-small">View Order History</a>
+        </div>
+    </div>
+
+
+    <div class="dashboard-grid">
+        <a href="{% url 'shop:product_list_all' %}" class="dashboard-card">
+            <div class="card-icon">&#128722;</div> {# Shopping bags emoji #}
+            <h2>View All Products</h2>
+            <p>Browse our entire catalog.</p>
+        </a>
+
+        <a href="{% url 'shop:cart_detail' %}" class="dashboard-card">
+            <div class="card-icon">&#128722;</div> {# Shopping cart emoji #}
+            <h2>Shopping Cart</h2>
+            <p>View and manage items in your cart.</p>
+        </a>
+
+        {% if user.is_authenticated %}
+            <a href="{% url 'shop:customer_profile' %}" class="dashboard-card">
+                <div class="card-icon">&#128100;</div> {# Bust in silhouette emoji #}
+                <h2>My Profile</h2>
+                <p>Update your account details.</p>
+            </a>
+
+            <a href="{% url 'shop:order_history' %}" class="dashboard-card">
+                <div class="card-icon">&#128179;</div>
+                <h2>Order History</h2>
+                <p>Check your past orders.</p>
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .dashboard-container {
+        text-align: center;
+        padding: 20px;
+    }
+    .dashboard-container h1 {
+        margin-bottom: 10px;
+        color: #333;
+    }
+    .dashboard-container .lead {
+        margin-bottom: 30px;
+        font-size: 1.1em;
+        color: #555;
+    }
+
+    /* User Summary Section Styles */
+    .user-summary-section {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around; /* Or space-between */
+        gap: 20px;
+        margin-bottom: 40px; /* Space before the main grid */
+        padding: 20px;
+        background-color: #e9ecef; /* Light grey background for the section */
+        border-radius: 8px;
+    }
+    .summary-card {
+        background-color: #fff;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: left; /* Align text left within cards */
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        flex-basis: calc(50% - 20px); /* Two cards per row, adjust as needed */
+        min-width: 280px; /* Ensure cards don't get too small */
+        box-sizing: border-box;
+    }
+    .summary-card h3 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: #007bff;
+        font-size: 1.3em;
+    }
+    .summary-card p {
+        margin-bottom: 8px;
+        font-size: 1em;
+        color: #495057;
+    }
+    .summary-card .order-count {
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #28a745; /* Green for count */
+        text-align: center;
+        margin: 10px 0;
+    }
+    .button.button-small { /* For smaller buttons within summary cards */
+        padding: 6px 12px;
+        font-size: 0.9em;
+        margin-top: 10px;
+    }
+
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin-top: 20px;
+    }
+    .dashboard-card {
+        background-color: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 25px;
+        text-align: center;
+        text-decoration: none;
+        color: #333;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        color: #007bff;
+    }
+    .dashboard-card .card-icon {
+        font-size: 2.8em;
+        margin-bottom: 15px;
+        color: #007bff;
+    }
+    .dashboard-card h2 {
+        font-size: 1.4em;
+        margin-bottom: 8px;
+        color: #333;
+    }
+    .dashboard-card:hover h2 {
+        color: #007bff;
+    }
+    .dashboard-card p {
+        font-size: 0.95em;
+        color: #666;
+        line-height: 1.5;
+    }
+</style>
+{% endblock content %}

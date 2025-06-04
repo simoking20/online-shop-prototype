@@ -1,0 +1,58 @@
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block title %}{{ form_title|default:"Manage Product" }} - {{ block.super }}{% endblock title %}
+
+{% block content %}
+<div class="product-form-container container">
+    <p><a href="{% url 'shop:seller_dashboard' %}" class="button button-secondary back-link mb-2">&laquo; Back to Seller Dashboard</a></p>
+    <h2>{{ form_title|default:"Manage Product" }}</h2>
+
+    {% if product.image %}
+        <div class="current-image-preview mb-2">
+            <p>Current Image:</p>
+            <img src="{{ product.image.url }}" alt="Current image for {{ product.name }}" style="max-width: 200px; max-height: 200px; border-radius: 5px; border: 1px solid #ddd;">
+        </div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" class="styled-form"> {# enctype for file uploads #}
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div class="form-errors non-field-errors">
+                {% for error in form.non_field_errors %}
+                    <p class="error-message">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% for field in form %}
+            <div class="form-group {% if field.name == 'available' %}form-check-group{% endif %}">
+                {% if field.name == 'available' %}
+                    {{ field }} 
+                    <label for="{{ field.id_for_label }}" class="form-check-label">{{ field.label }}</label>
+                {% else %}
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                {% endif %}
+
+                {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text|safe }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        
+        <div class="form-actions">
+            <button type="submit" class="button">Save Product</button>
+        </div>
+    </form>
+</div>
+<style>
+    .form-check-group { display: flex; align-items: center; gap: 10px; }
+    .form-check-group input[type="checkbox"] { width: auto; margin-bottom: 0; } /* Adjust checkbox styling */
+    .form-check-label { margin-bottom: 0; font-weight: normal; }
+</style>
+{% endblock content %}

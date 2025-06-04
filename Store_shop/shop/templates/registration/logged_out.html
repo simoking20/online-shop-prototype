@@ -1,0 +1,49 @@
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block title %}Logged Out - {{ block.super }}{% endblock title %}
+
+{% block content %}
+<div class="logout-container">
+    <div class="logout-message-wrapper">
+        <h2>You have been successfully logged out.</h2>
+        <p>Thank you for visiting MyOnlineShop!</p>
+        <div class="logout-actions">
+            <a href="{% url 'shop:product_list_all' %}" class="button">Continue Shopping</a>
+            <a href="{% url 'shop:login' %}" class="button button-secondary">Login Again</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .logout-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 20px;
+        min-height: 50vh; /* Adjust as needed */
+        text-align: center;
+    }
+    .logout-message-wrapper {
+        background-color: #fff;
+        padding: 30px 40px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 500px;
+    }
+    .logout-message-wrapper h2 {
+        color: #28a745; /* Green for success */
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+    .logout-message-wrapper p {
+        margin-bottom: 25px;
+        color: #555;
+        font-size: 1.05em;
+    }
+    .logout-actions .button { /* These will use the .button styles from base.html */
+        margin: 10px 5px;
+    }
+</style>
+{% endblock content %}

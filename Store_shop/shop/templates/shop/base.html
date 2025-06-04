@@ -1,0 +1,286 @@
+{% load static %}
+{% load shop_tags %} {# Load your custom template tags/filters #}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SIMO Shop{% endblock title %}</title>
+    <style>
+        /* Basic Reset & Global Styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f7f6;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+            box-sizing: border-box;
+        }
+
+        /* Header Styles */
+        header {
+            background: #ffffff;
+            color: #333;
+            padding: 1rem 0; /* Adjusted padding for header */
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        header a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header #branding a {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #007bff;
+        }
+
+        header nav ul {
+            padding: 0;
+            list-style: none;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        header nav ul li {
+            margin-left: 25px;
+        }
+
+        header nav ul li a, header nav ul li button.link-style-button {
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+            background: none;
+            border: none;
+            color: #333;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        header nav ul li button.link-style-button:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+
+        header nav ul li a:hover,
+        header nav ul li a.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .cart-info a {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .cart-info a .cart-text {
+            margin-right: 5px;
+        }
+
+        .cart-badge {
+            background-color: #dc3545;
+            color: white;
+            border-radius: 50%;
+            padding: 3px 7px;
+            font-size: 0.75em;
+            font-weight: bold;
+            line-height: 1;
+            position: relative;
+        }
+
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0 0 0;
+        }
+
+        .messages li {
+            padding: 12px 18px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid transparent;
+            font-size: 0.95em;
+        }
+
+        .messages li.success { background-color: #d1e7dd; color: #0f5132; border-color: #badbcc; }
+        .messages li.error { background-color: #f8d7da; color: #842029; border-color: #f5c2c7; }
+        .messages li.info { background-color: #cff4fc; color: #055160; border-color: #b6effb; }
+        .messages li.warning { background-color: #fff3cd; color: #664d03; border-color: #ffecb5; }
+
+        .main-content {
+            padding: 25px 0;
+            min-height: calc(100vh - 100px - 80px); /* Adjusted based on header and footer height */
+            background-color: #ffffff;
+            margin-top: 1px;
+        }
+        .main-content .container {
+             background-color: #ffffff;
+             padding-top: 20px;
+             padding-bottom: 20px;
+             border-radius: 5px;
+        }
+
+        footer {
+            background: #343a40;
+            color: #f8f9fa;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: auto;
+            font-size: 0.9em;
+        }
+        footer p { margin: 0; }
+        footer a { color: #007bff; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+
+
+        .button, button, input[type="submit"] {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .button:hover, button:hover, input[type="submit"]:hover { background-color: #0056b3; }
+        .button-secondary { background-color: #6c757d; }
+        .button-secondary:hover { background-color: #545b62; }
+        .button-danger { background-color: #dc3545; }
+        .button-danger:hover { background-color: #c82333; }
+        .button-small { padding: 6px 12px; font-size: 0.9em; }
+
+
+        form { margin-bottom: 20px; }
+        form p { margin-bottom: 10px; }
+        form label { display: block; margin-bottom: 5px; font-weight: bold; }
+        form input[type="text"],
+        form input[type="email"],
+        form input[type="password"],
+        form input[type="number"],
+        form select,
+        form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        form input[type="checkbox"] { margin-right: 5px; vertical-align: middle; width: auto; }
+        .form-actions { margin-top: 20px; }
+
+        .text-center { text-align: center; }
+        .mt-1 { margin-top: 0.5rem !important; }
+        .mt-2 { margin-top: 1rem !important; }
+        .mb-1 { margin-bottom: 0.5rem !important; }
+        .mb-2 { margin-bottom: 1rem !important; }
+        .table { width: 100%; margin-bottom: 1rem; color: #212529; border-collapse: collapse; }
+        .table th, .table td { padding: .75rem; vertical-align: top; border-top: 1px solid #dee2e6; }
+        .table thead th { vertical-align: bottom; border-bottom: 2px solid #dee2e6; }
+        .table-responsive { display: block; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+    </style>
+    {% block extra_head %}{% endblock extra_head %}
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div id="branding">
+                <a href="{% url 'home_dashboard' %}">SIMO Shop</a>
+            </div>
+            <nav>
+                <ul>
+                    {% get_cart_item_count_tag as current_cart_items %}
+                    {% if not user.is_authenticated %}
+                        <li><a href="{% url 'shop:product_list_all' %}" class="{% if request.resolver_match.url_name == 'product_list_all' or request.resolver_match.url_name == 'product_list_by_category' %}active{% endif %}">Products</a></li>
+                        <li class="cart-info">
+                             <a href="{% url 'shop:cart_detail' %}" class="{% if request.resolver_match.url_name == 'cart_detail' %}active{% endif %}">
+                                <span class="cart-text">Cart</span>
+                                {% if current_cart_items > 0 %}
+                                    <span class="cart-badge">{{ current_cart_items }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li><a href="{% url 'shop:login' %}" class="{% if request.resolver_match.url_name == 'login' %}active{% endif %}">Login</a></li>
+                        <li><a href="{% url 'shop:customer_register' %}" class="{% if request.resolver_match.url_name == 'customer_register' %}active{% endif %}">Register</a></li>
+                    {% else %}
+                        <li><a href="{% url 'home_dashboard' %}"
+                               class="{% if request.resolver_match.url_name == 'home_dashboard' %}active{% endif %}">
+                               Home
+                            </a>
+                        </li>
+                        <li><a href="{% url 'shop:product_list_all' %}" class="{% if request.resolver_match.url_name == 'product_list_all' or request.resolver_match.url_name == 'product_list_by_category' %}active{% endif %}">Products</a></li>
+                         <li class="cart-info">
+                             <a href="{% url 'shop:cart_detail' %}" class="{% if request.resolver_match.url_name == 'cart_detail' %}active{% endif %}">
+                                <span class="cart-text">Cart</span>
+                                {% if current_cart_items > 0 %}
+                                    <span class="cart-badge">{{ current_cart_items }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li><a href="{% url 'shop:order_history' %}" class="{% if request.resolver_match.url_name == 'order_history' %}active{% endif %}">Orders</a></li>
+                        <li><a href="{% url 'shop:customer_profile' %}" class="{% if request.resolver_match.url_name == 'customer_profile' %}active{% endif %}">Account Profile</a></li>
+                        {% if user|is_seller %}
+                            <li><a href="{% url 'shop:seller_dashboard' %}" class="{% if request.resolver_match.url_name == 'seller_dashboard' %}active{% endif %}">Manage Store</a></li>
+                        {% endif %}
+                        <li>
+                            <form id="logout-form" method="POST" action="{% url 'shop:logout' %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="link-style-button">Logout ({{ user.username|truncatechars:15 }})</button>
+                            </form>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {# About Section is NOT in the header anymore #}
+    </header>
+
+    <div class="main-content">
+        <div class="container">
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li class="{{ message.tags }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {% block content %}
+            {# Content from child templates will go here #}
+            {% endblock content %}
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; {% now "Y" %} SIMO SHOP. All Rights Reserved. | <a href="{% url 'shop:about_page' %}">About Us</a></p>
+    </footer>
+
+    {% block extra_scripts %}{% endblock extra_scripts %}
+</body>
+</html>

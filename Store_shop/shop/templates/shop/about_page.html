@@ -1,0 +1,65 @@
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block title %}About Us - {{ block.super }}{% endblock title %}
+
+{% block content %}
+<div class="about-page-container container">
+    {# Reusing the .about-section class and styles from base.html for consistency, #}
+    {# but it's now in its own page content block. #}
+    <section class="about-section" style="margin-top: 20px; margin-bottom: 20px; background-color: #fff; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        <h2>About the Developer</h2>
+        <p class="role">HACINI Mohammed Oussama</p>
+        <p>CS Engineer & Full Stack Developer</p>
+        <p>Student at UKMO (Université Kasdi Merbah Ouargla)</p>
+        
+        <div class="about-details mt-3">
+            <p>This e-commerce platform, SIMO Shop, is a demonstration project showcasing various web development skills and technologies.</p>
+            <p>Feel free to browse, register, and explore the functionalities. If you have any feedback or inquiries, you can reach out through the (soon to be implemented) contact page!</p>
+            {# You can add more details, a mission statement, or contact info here #}
+        </div>
+    </section>
+</div>
+
+<style>
+    /* Styles for about_page.html, can be inlined or moved to a CSS file */
+    .about-page-container {
+        padding-top: 20px;
+        padding-bottom: 30px;
+    }
+    .about-section { /* Styles for this section are now local to this page or can be inherited if defined globally */
+        background-color: #fff; /* Overriding the one from base if it was #f8f9fa */
+        padding: 30px; /* More padding for a dedicated page */
+        margin-bottom: 30px; 
+        border-radius: 8px;
+        /* border: 1px solid #e0e0e0; */ /* Removed border for a cleaner look on its own page */
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Enhanced shadow for dedicated page */
+    }
+    .about-section h2 {
+        color: #007bff;
+        margin-top: 0;
+        margin-bottom: 20px; /* More space */
+        font-size: 2em; /* Larger for dedicated page */
+    }
+    .about-section p {
+        font-size: 1.15em; /* Slightly larger text */
+        color: #333; /* Darker text for better readability */
+        line-height: 1.8;
+        margin-bottom: 10px;
+    }
+    .about-section .role {
+        font-weight: 600; /* Bolder role */
+        font-size: 1.3em;
+        color: #17a2b8; /* Different highlight color */
+    }
+    .about-details {
+        margin-top: 25px;
+        text-align: left; /* Align details text to left for readability */
+        max-width: 700px; /* Constrain width of detail text */
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .mt-3 { margin-top: 1.5rem !important; }
+</style>
+{% endblock content %}

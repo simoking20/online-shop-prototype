@@ -1,0 +1,177 @@
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block title %}{% if category %}{{ category.name }} Products{% else %}All Products{% endif %} - {{ block.super }}{% endblock title %}
+
+{% block content %}
+<div class="product-list-page">
+    <aside id="sidebar">
+        <h2>Categories</h2>
+        <ul>
+            <li {% if not category %}class="active"{% endif %}>
+                <a href="{% url 'shop:product_list_all' %}">All Products</a>
+            </li>
+            {% for cat in categories %}
+                <li {% if category.slug == cat.slug %}class="active"{% endif %}>
+                    <a href="{% url 'shop:product_list_by_category' cat.slug %}">{{ cat.name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </aside>
+
+    <section id="main-product-content">
+        <h1>{% if category %}{{ category.name }}{% else %}All Products{% endif %}</h1>
+        <div id="product-grid">
+            {% if products %}
+                {% for product in products %}
+                    <div class="product-card">
+                        <a href="{% url 'shop:product_detail' product.id product.slug %}" class="product-card-link">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                            {% else %}
+                                <img src="https://placehold.co/300x300/EFEFEF/AAAAAA?text=No+Image" alt="{{ product.name }}" class="product-image">
+                            {% endif %}
+                            <div class="product-info">
+                                <h3>{{ product.name }}</h3>
+                                <p class="product-price"><strong>Price:</strong> ${{ product.price|floatformat:2 }}</p>
+                                {% if product.category %}
+                                    <p class="product-category-name"><small>Category: {{ product.category.name }}</small></p>
+                                {% endif %}
+                                <p class="product-description-short">{{ product.description|truncatewords:15 }}</p>
+                            </div>
+                        </a>
+                        {# Add to cart form directly on product card - optional #}
+                        <form method="POST" action="{% url 'shop:add_to_cart' product.id %}" class="add-to-cart-form-list">
+                            {% csrf_token %}
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="button button-small add-to-cart-button-list">Add to Cart</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No products found in this category.</p>
+            {% endif %}
+        </div>
+    </section>
+</div>
+
+{% endblock content %}
+
+{% block extra_head %}
+<style>
+    .product-list-page {
+        display: flex;
+        gap: 20px; /* Gap between sidebar and main content */
+    }
+    #sidebar {
+        flex: 0 0 230px; /* Fixed width for sidebar */
+        padding: 20px;
+        background-color: #f8f9fa; /* Slightly different background for sidebar */
+        border-radius: 5px;
+        height: fit-content; /* Adjust height to content */
+        border: 1px solid #e0e0e0;
+    }
+    #sidebar h2 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        font-size: 1.4em;
+        color: #333;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 10px;
+    }
+    #sidebar ul {
+        list-style-type: none;
+        padding: 0;
+    }
+    #sidebar ul li a {
+        text-decoration: none;
+        color: #007bff;
+        display: block;
+        padding: 10px 12px;
+        border-radius: 4px;
+        margin-bottom: 5px;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    #sidebar ul li a:hover,
+    #sidebar ul li.active a {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    #main-product-content {
+        flex: 1; /* Main content takes remaining space */
+    }
+    #main-product-content h1 {
+        margin-top: 0; /* Align with sidebar heading if possible */
+        margin-bottom: 20px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+    }
+
+    #product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
+        gap: 25px;
+    }
+    .product-card {
+        background-color: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden; /* To contain floated/positioned elements and border-radius on image */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.07);
+        display: flex;
+        flex-direction: column; /* Stack content vertically */
+        transition: box-shadow 0.3s ease;
+    }
+    .product-card:hover {
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .product-card-link {
+        text-decoration: none;
+        color: inherit; /* Inherit color from .product-card */
+        display: block;
+        flex-grow: 1; /* Allow link area to grow */
+    }
+    .product-image {
+        width: 100%;
+        height: 200px; /* Fixed height for images */
+        object-fit: cover; /* Cover the area, might crop */
+        border-bottom: 1px solid #eee;
+    }
+    .product-info {
+        padding: 15px;
+    }
+    .product-info h3 {
+        margin-top: 0;
+        margin-bottom: 8px;
+        font-size: 1.15em;
+        color: #333;
+    }
+    .product-price {
+        font-size: 1.1em;
+        font-weight: bold;
+        color: #28a745; /* Green for price */
+        margin-bottom: 8px;
+    }
+    .product-category-name {
+        font-size: 0.85em;
+        color: #6c757d;
+        margin-bottom: 8px;
+    }
+    .product-description-short {
+        font-size: 0.9em;
+        color: #555;
+        line-height: 1.5;
+        margin-bottom: 10px; /* Space before potential add to cart button */
+    }
+    .add-to-cart-form-list {
+        padding: 0 15px 15px 15px; /* Padding for the form within the card */
+        margin-top: auto; /* Push form to the bottom */
+    }
+    .button.button-small.add-to-cart-button-list {
+        width: 100%;
+        padding: 8px 10px;
+        font-size: 0.9em;
+    }
+</style>
+{% endblock extra_head %}

@@ -1,0 +1,213 @@
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block title %}Checkout - {{ block.super }}{% endblock title %}
+
+{% block content %}
+<div class="checkout-container container">
+    <h2>Checkout</h2>
+
+    {% if not items %}
+        <div class="cart-empty">
+            <p>Your cart is empty. You cannot proceed to checkout.</p>
+            <a href="{% url 'shop:product_list_all' %}" class="button">Continue Shopping</a>
+        </div>
+    {% else %}
+        <div class="checkout-layout">
+            <div class="order-summary-checkout">
+                <h3>Your Order Summary</h3>
+                <ul class="checkout-item-list">
+                    {% for item in items %}
+                        <li class="checkout-item">
+                            <div class="checkout-item-image">
+                                {% if item.product.image %}
+                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                                {% else %}
+                                    <img src="https://placehold.co/60x60/EFEFEF/AAAAAA?text=No+Img" alt="{{ item.product.name }}">
+                                {% endif %}
+                            </div>
+                            <div class="checkout-item-details">
+                                <span class="item-name">{{ item.product.name }}</span>
+                                <span class="item-quantity">Qty: {{ item.quantity }}</span>
+                            </div>
+                            <div class="checkout-item-price">
+                                ${{ item.get_total|floatformat:2 }}
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="checkout-totals">
+                    <p><strong>Subtotal:</strong> <span>${{ order.get_cart_total|floatformat:2 }}</span></p>
+                    {# Placeholder for Shipping Cost #}
+                    {# <p><strong>Shipping:</strong> <span>$5.00</span></p> #}
+                    <p class="grand-total"><strong>Total:</strong> <span>${{ order.get_cart_total|floatformat:2 }}</span></p>
+                </div>
+                 <a href="{% url 'shop:cart_detail' %}" class="button button-secondary button-small mt-1">Edit Cart</a>
+            </div>
+
+            <div class="shipping-address-form">
+                <h3>Shipping Address</h3>
+                <form method="POST" action="{% url 'shop:checkout' %}" class="styled-form">
+                    {% csrf_token %}
+                    
+                    {% if shipping_form.non_field_errors %}
+                        <div class="form-errors non-field-errors">
+                            {% for error in shipping_form.non_field_errors %}
+                                <p class="error-message">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% for field in shipping_form %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                                <small class="form-text text-muted">{{ field.help_text|safe }}</small>
+                            {% endif %}
+                            {% for error in field.errors %}
+                                <div class="error-message">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                    
+                    <button type="submit" class="button checkout-confirm-btn">Confirm Shipping & Proceed</button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .checkout-container {
+        padding-top: 20px;
+        padding-bottom: 40px;
+    }
+    .checkout-container h2 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #333;
+        font-weight: 600;
+    }
+    .cart-empty { /* Reusing from cart_detail.html styles if needed, or define here */
+        text-align: center;
+        padding: 40px 20px;
+        background-color: #f8f9fa;
+        border: 1px dashed #ced4da;
+        border-radius: 8px;
+    }
+    .cart-empty p {
+        font-size: 1.2em;
+        margin-bottom: 20px;
+    }
+
+    .checkout-layout {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px; /* Space between order summary and shipping form */
+    }
+
+    .order-summary-checkout {
+        flex: 1 1 350px; /* Takes up part of the space, allows wrapping */
+        background-color: #f8f9fa;
+        padding: 25px;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        height: fit-content; /* Adjust height to content */
+    }
+    .order-summary-checkout h3 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 1.4em;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 10px;
+    }
+    .checkout-item-list {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 20px;
+    }
+    .checkout-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+    .checkout-item:last-child {
+        border-bottom: none;
+    }
+    .checkout-item-image img {
+        width: 50px; /* Smaller images for summary */
+        height: 50px;
+        object-fit: cover;
+        border-radius: 4px;
+        margin-right: 15px;
+    }
+    .checkout-item-details {
+        flex-grow: 1;
+    }
+    .checkout-item-details .item-name {
+        font-weight: 500;
+        display: block;
+    }
+    .checkout-item-details .item-quantity {
+        font-size: 0.9em;
+        color: #666;
+    }
+    .checkout-item-price {
+        font-weight: 500;
+        margin-left: 10px; /* Space from details */
+    }
+    .checkout-totals p {
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.1em;
+        margin-bottom: 8px;
+    }
+    .checkout-totals p.grand-total strong,
+    .checkout-totals p.grand-total span {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: #28a745;
+    }
+
+    .shipping-address-form {
+        flex: 2 1 500px; /* Takes more space, allows wrapping */
+        background-color: #fff;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .shipping-address-form h3 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 1.4em;
+    }
+    /* Using .styled-form and .form-group from base.html styles */
+    .styled-form .form-group {
+        margin-bottom: 18px;
+    }
+    .checkout-confirm-btn {
+        width: 100%;
+        padding: 12px;
+        font-size: 1.1em;
+        margin-top: 10px;
+    }
+    .form-errors.non-field-errors .error-message { /* Style for non-field errors */
+        color: #721c24;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+    }
+    .error-message { /* For field-specific errors */
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: 5px;
+        display: block;
+    }
+    .mt-1 { margin-top: 0.5rem !important; }
+
+</style>
+{% endblock content %}

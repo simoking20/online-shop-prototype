@@ -1,0 +1,126 @@
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block title %}Login - {{ block.super }}{% endblock title %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-form-wrapper">
+        <h2>Login to Your Account</h2>
+
+        {% if form.errors and not form.non_field_errors %}
+            <p class="error-summary">Please correct the error below.</p>
+        {% endif %}
+
+        {% if form.non_field_errors %}
+            <div class="non-field-errors">
+                {% for error in form.non_field_errors %}
+                    <p class="error-message">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'shop:login' %}" class="styled-form">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            
+            <button type="submit" class="button login-button">Login</button>
+            <input type="hidden" name="next" value="{{ request.GET.next | default:'/' }}"> {# Redirect after login #}
+        </form>
+        <div class="login-links">
+            <p><a href="{% url 'shop:password_reset' %}">Forgot your password?</a></p>
+            <p>Don't have an account? <a href="{% url 'shop:customer_register' %}">Register here</a></p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 20px; /* More padding for better centering on page */
+        min-height: 60vh; /* Ensure it takes noticeable height */
+    }
+    .login-form-wrapper {
+        background-color: #fff;
+        padding: 30px 40px; /* More padding inside the box */
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        width: 100%;
+        max-width: 450px; /* Slightly wider for comfort */
+    }
+    .login-form-wrapper h2 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 25px; /* More space below title */
+        font-weight: 600; /* Bolder title */
+    }
+    .styled-form .form-group {
+        margin-bottom: 20px; /* More space between form fields */
+    }
+    .styled-form label {
+        display: block;
+        margin-bottom: 8px; /* More space below label */
+        font-weight: 500;
+        color: #555;
+    }
+    .styled-form input[type="text"],
+    .styled-form input[type="password"],
+    .styled-form input[type="email"] { /* Added email for completeness if needed */
+        width: 100%;
+        padding: 12px; /* Larger padding for inputs */
+        border: 1px solid #ccc;
+        border-radius: 5px; /* More rounded inputs */
+        box-sizing: border-box;
+        font-size: 1em;
+    }
+    .login-button {
+        width: 100%;
+        padding: 12px; /* Larger button padding */
+        font-size: 1.1em; /* Slightly larger button text */
+        margin-top: 10px; /* Space above button */
+    }
+    .error-summary, .non-field-errors .error-message {
+        color: #721c24;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    .error-message { /* For field-specific errors */
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: 5px;
+    }
+    .login-links {
+        text-align: center;
+        margin-top: 25px; /* More space above links */
+    }
+    .login-links p {
+        margin-bottom: 10px;
+        font-size: 0.95em;
+    }
+    .login-links a {
+        color: #007bff;
+        text-decoration: none;
+    }
+    .login-links a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock content %}

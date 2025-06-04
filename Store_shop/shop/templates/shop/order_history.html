@@ -1,0 +1,97 @@
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block title %}My Order History - {{ block.super }}{% endblock title %}
+
+{% block content %}
+<div class="order-history-container container">
+    {# Removed Back to Profile button from here #}
+
+    <h2>My Order History</h2>
+
+    {% if orders %}
+        <ul class="order-list">
+            {% for order in orders %}
+                <li class="order-item">
+                    <div class="order-summary">
+                        <h3>Order #{{ order.id }}</h3>
+                        <p><strong>Date:</strong> {{ order.date_ordered|date:"F d, Y, P" }}</p>
+                        <p><strong>Total:</strong> ${{ order.get_cart_total|floatformat:2 }}</p>
+                        <p><strong>Status:</strong> {% if order.complete %}Completed{% else %}Processing{% endif %}</p>
+                    </div>
+                    <div class="order-details-link">
+                        <a href="{% url 'shop:order_confirmation' order.id %}" class="button button-small">View Details</a>
+                    </div>
+                    <div class="order-items-preview">
+                        <h4>Items:</h4>
+                        <ul>
+                            {% for item in order.items.all %}
+                                <li>{{ item.quantity }} x {{ item.product.name }} (${{ item.get_total|floatformat:2 }})</li>
+                            {% empty %}
+                                <li>No items found for this order.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have no past orders.</p>
+    {% endif %}
+</div>
+
+<style>
+    .order-history-container {
+        padding-top: 20px;
+    }
+    .order-history-container h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #333;
+    }
+    .order-list {
+        list-style: none;
+        padding: 0;
+    }
+    .order-item {
+        background-color: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    }
+    .order-summary {
+        margin-bottom: 15px;
+    }
+    .order-summary h3 {
+        margin-top: 0;
+        color: #007bff;
+    }
+    .order-summary p {
+        margin: 5px 0;
+        color: #555;
+    }
+    .order-details-link {
+        margin-bottom: 15px;
+    }
+    .order-items-preview h4 {
+        margin-top: 10px;
+        margin-bottom: 5px;
+        font-size: 1.1em;
+    }
+    .order-items-preview ul {
+        list-style-type: disc;
+        margin-left: 20px;
+        padding-left: 0;
+        font-size: 0.95em;
+    }
+    .order-items-preview ul li {
+        color: #666;
+    }
+    .button.button-small {
+        padding: 6px 12px;
+        font-size: 0.9em;
+    }
+</style>
+{% endblock content %}

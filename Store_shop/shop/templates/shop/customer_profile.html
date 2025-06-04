@@ -1,0 +1,150 @@
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block title %}My Profile - {{ block.super }}{% endblock title %}
+
+{% block content %}
+<div class="profile-container">
+    <h2>My Profile</h2>
+    <p>Welcome, {{ user.username }}! Update your information below.</p>
+
+    <div class="profile-forms-grid">
+        {# Form to update User model details (username, email, first_name, last_name) #}
+        <form method="POST" class="profile-form">
+            {% csrf_token %}
+            <h3>Account Details</h3>
+            {% if user_form.non_field_errors %}
+                <div class="form-errors">
+                    {% for error in user_form.non_field_errors %}
+                        <p class="error-message">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% for field in user_form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            {# Added id to the button below #}
+            <button type="submit" id="update_user_details_btn" name="update_user_details" class="button mt-1">Update Account Details</button>
+        </form>
+
+        {# Form to update Customer model details (name, email specific to customer profile) #}
+        <form method="POST" class="profile-form">
+            {% csrf_token %}
+            <h3>Profile Information</h3>
+            {% if profile_form.non_field_errors %}
+                <div class="form-errors">
+                    {% for error in profile_form.non_field_errors %}
+                        <p class="error-message">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% for field in profile_form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            {# Added id to the button below #}
+            <button type="submit" id="update_profile_info_btn" name="update_profile_info" class="button mt-1">Update Profile Information</button>
+        </form>
+    </div>
+
+    <div class="profile-actions mt-2">
+        <a href="{% url 'shop:order_history' %}" class="button button-secondary">View Order History</a>
+        {# Add link to change password if you implement it separately #}
+        {# <a href="{% url 'password_change' %}" class="button button-secondary">Change Password</a> #}
+    </div>
+</div>
+
+<style>
+    .profile-container {
+        background-color: #fff;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .profile-container h2 {
+        color: #333;
+        margin-bottom: 20px;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+    }
+    .profile-forms-grid {
+        display: grid;
+        grid-template-columns: 1fr; /* Stack forms on small screens */
+        gap: 30px;
+    }
+    @media (min-width: 768px) { /* Side-by-side on larger screens */
+        .profile-forms-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+    .profile-form {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 5px;
+        border: 1px solid #e7e7e7;
+    }
+    .profile-form h3 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: #007bff;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #555;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="password"],
+    .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    .error-message {
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: 5px;
+    }
+    .form-errors p.error-message {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #f5c6cb;
+    }
+    .profile-actions {
+        margin-top: 30px;
+        text-align: center;
+    }
+    .profile-actions .button {
+        margin: 0 10px;
+    }
+</style>
+{% endblock content %}

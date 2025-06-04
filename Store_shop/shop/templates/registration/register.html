@@ -1,0 +1,138 @@
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block title %}Create an Account - {{ block.super }}{% endblock title %}
+
+{% block content %}
+<div class="register-container">
+    <div class="register-form-wrapper">
+        <h2>Create Your Account</h2>
+        <p>Join us to start shopping!</p>
+
+        {% if form.errors and not form.non_field_errors %}
+            <p class="error-summary">Please correct the errors below to continue.</p>
+        {% endif %}
+
+        {% if form.non_field_errors %}
+            <div class="non-field-errors">
+                {% for error in form.non_field_errors %}
+                    <p class="error-message">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'shop:customer_register' %}" class="styled-form">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text|safe }}</small> {# Use |safe if help_text contains HTML #}
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            
+            <button type="submit" class="button register-button">Create Account</button>
+        </form>
+        <div class="register-links">
+            <p>Already have an account? <a href="{% url 'shop:login' %}">Login here</a></p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .register-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 20px;
+        min-height: 70vh; /* Ensure it takes noticeable height */
+    }
+    .register-form-wrapper {
+        background-color: #fff;
+        padding: 30px 40px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        width: 100%;
+        max-width: 500px; /* Slightly wider for registration form */
+    }
+    .register-form-wrapper h2 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+    .register-form-wrapper p {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #666;
+        font-size: 0.95em;
+    }
+    .styled-form .form-group {
+        margin-bottom: 18px; /* Space between form fields */
+    }
+    .styled-form label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 500;
+        color: #555;
+    }
+    .styled-form input[type="text"],
+    .styled-form input[type="password"],
+    .styled-form input[type="email"] {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        font-size: 1em;
+    }
+    .register-button {
+        width: 100%;
+        padding: 12px;
+        font-size: 1.1em;
+        margin-top: 10px;
+    }
+    .error-summary, .non-field-errors .error-message {
+        color: #721c24;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        text-align: left; /* Align text left for better readability of errors */
+    }
+    .error-message { /* For field-specific errors */
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: 5px;
+        display: block; /* Ensure it takes its own line */
+    }
+    .register-links {
+        text-align: center;
+        margin-top: 25px;
+    }
+    .register-links p {
+        margin-bottom: 10px;
+        font-size: 0.95em;
+    }
+    .register-links a {
+        color: #007bff;
+        text-decoration: none;
+    }
+    .register-links a:hover {
+        text-decoration: underline;
+    }
+    .form-text.text-muted { /* Styling for help text */
+        font-size: 0.85em;
+        color: #6c757d;
+        display: block;
+        margin-top: 4px;
+    }
+</style>
+{% endblock content %}
